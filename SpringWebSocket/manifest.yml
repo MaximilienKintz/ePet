@@ -1,0 +1,7 @@
+---
+applications:
+- name: spring-websocket
+  memory: 512M
+  random-route: true
+  path: target/SpringWebSocket-0.0.1.jar
+
