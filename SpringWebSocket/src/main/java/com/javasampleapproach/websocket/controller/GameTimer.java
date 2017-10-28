@@ -50,7 +50,7 @@ public class GameTimer {
 	
 	private Location location;
 	
-	
+	private String robotIp;
 	
 	public Location getLocation() {
 		return location;
@@ -140,4 +140,14 @@ public class GameTimer {
 				locationController.broadcast(location);
 			}
 	}
+
+	public void setRobotIp(String ip) {
+		this.robotIp = ip;
+	}
+
+	public String getRobotIp() {
+		return robotIp;
+	}
+	
+	
 }

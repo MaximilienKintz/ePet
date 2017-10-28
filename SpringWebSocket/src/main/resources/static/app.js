@@ -4,6 +4,7 @@ var context = null;
 var requestPos = {};
 var currentPos = {};
 var width, height;
+var fallbackIP = "172.20.10.10:8000";
 
 
 function setConnected(connected) {
@@ -141,6 +142,83 @@ function onClick(e) {
     requestLocation(requestPos);
 }
 
+function moveForward() {
+	move("forward");
+}
+
+
+function turnLeft() {
+	move("turnleft");
+}
+
+function turnRight() {
+	move("turnright");
+}
+
+function stopMove() {
+	move("stop");
+}
+
+function moveBackward() {
+	move("backward");
+}
+
+function obtainIp() {
+	if(globalIP) {
+		return globalIP;
+	} else {
+		return fallbackIP;
+	}
+}
+
+function move(direction) {
+	var url = "http://"+obtainIp()+"/cmd";
+	var data = direction;
+	$.ajax({
+		  type: "POST",
+		  url: url,
+		  data: data,
+		  success: function(data) {
+			  console.log(data);
+		   },
+		  dataType: "json",
+		  timeout: 1000 
+		});
+}
+
+function getIPFromRobot() {
+	$.ajax({
+		  type: "GET",
+		  url: "/register",
+		  success: function(data) {
+			  if(data) {
+				  globalIP = data;
+			  	console.log("Received IP: " + data);
+			  } else {
+				  console.log("No IP available, falling back to: " + fallbackIP);
+				  globalIP = fallbackIP;
+			  }
+			  showCurrentIP();
+		   },
+		   error: function(XMLHttpRequest, textStatus, errorThrown) { 
+               console.log("error occured");
+               console.log("No IP available, falling back to: " + fallbackIP);
+               globalIP = fallbackIP;
+               showCurrentIP();
+           },
+		  dataType: "text",
+		  timeout: 1000 
+		});
+}
+
+function showCurrentIP() {
+	$("#ipBox").text("Current IP: " + globalIP);
+}
+
+function renew() {
+	getIPFromRobot();
+}
+
 $(function () {
     $("form").on('submit', function (e) {
         e.preventDefault();
@@ -157,6 +235,8 @@ $(function () {
     
     canvas.addEventListener('mousemove', getCursorPosition, false);
     canvas.addEventListener("click", onClick, false);
+    
+    var myVar = setInterval(function(){ renew() }, 5000);
     
     animate();
 });
