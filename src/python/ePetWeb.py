@@ -1,7 +1,6 @@
 import time
 from bottle import get,post,run,request,template
 
-
 from AlphaBot2 import AlphaBot2
 
 print('ePet Web Server Test Start ...')
