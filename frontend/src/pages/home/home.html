@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>ePet</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+
+  <canvas #canvas></canvas>
+
+  <p>
+    <button ion-button block color="secondary" (click)="connect()" *ngIf="!connected">CONNECT</button>
+    <button ion-button block color="danger" (click)="disconnect()" *ngIf="connected">DISCONNECT</button>
+  </p>
+
+</ion-content>
