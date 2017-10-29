@@ -408,7 +408,7 @@ $(function () {
     canvas.addEventListener("click", onClick, false);
     
     var myVar = setInterval(function(){ renew() }, 5000);
-    var live = setInterval(function(){ naturalDecline() }, 1000);
+    var live = setInterval(function(){ naturalDecline() }, 5000);
     animate();
 });
 var moving = false;
