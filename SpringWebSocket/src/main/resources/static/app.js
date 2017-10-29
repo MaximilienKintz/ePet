@@ -12,6 +12,8 @@ var fit = 50;
 
 var reallyMove = true;
 
+
+
 function eat() {
 	hungry = Math.max(0, hungry - 10);
 	if (hungry < 50) {
@@ -35,6 +37,7 @@ function react() {
 	showCommunication(message);
 
 	moveBasedOnFeeling();
+	showHealth();
 }
 
 function moveBasedOnFeeling() {
@@ -123,6 +126,61 @@ function connect() {
         });
     });
 }
+
+function calculateRGBColor(val) {
+	var hue = Math.floor((100 - val) * 120 / 100);  // go from green to red
+	var saturation = Math.abs(val - 50)/50;   // fade to white as it approaches 50
+	
+	return hsv2rgb(hue, saturation, 1);
+}
+
+var hsv2rgb = function(h, s, v) {
+	  // adapted from http://schinckel.net/2012/01/10/hsv-to-rgb-in-javascript/
+	  var rgb, i, data = [];
+	  if (s === 0) {
+	    rgb = [v,v,v];
+	  } else {
+	    h = h / 60;
+	    i = Math.floor(h);
+	    data = [v*(1-s), v*(1-s*(h-i)), v*(1-s*(1-(h-i)))];
+	    switch(i) {
+	      case 0:
+	        rgb = [v, data[2], data[0]];
+	        break;
+	      case 1:
+	        rgb = [data[1], v, data[0]];
+	        break;
+	      case 2:
+	        rgb = [data[0], v, data[2]];
+	        break;
+	      case 3:
+	        rgb = [data[0], data[1], v];
+	        break;
+	      case 4:
+	        rgb = [data[2], data[0], v];
+	        break;
+	      default:
+	        rgb = [v, data[0], data[1]];
+	        break;
+	    }
+	  }
+	  return {R : Math.floor(rgb[0]*255), G : Math.floor(rgb[1]*255) , B : Math.floor(rgb[2]*255)};
+}
+
+
+function showHealth() {
+	var color = calculateRGBColor(hungry);
+	$("#colorBox").css('background', 'rgb('+color.R+','+color.G+',' + color.B +')');
+	
+	move("rgb"+zeroPad(color.R, 3)+zeroPad(color.G, 3)+zeroPad(color.B, 3)+"burst");
+	
+	$("#healthIndex").html("Hungry: <b>" + hungry + "%<b> Happy: <b>" + happy + "%</b> Fit: <b>" + fit + "%</b>");
+}
+
+function zeroPad(num, places) {
+	  var zero = places - num.toString().length + 1;
+	  return Array(+(zero > 0 && zero)).join("0") + num;
+	}
 
 function disconnect() {
     if (stompClient != null) {
@@ -324,6 +382,14 @@ function renew() {
 	getIPFromRobot();
 }
 
+function naturalDecline() {
+	hungry = Math.min(100, hungry + 2);
+	happy = Math.max(0, happy - 5);
+	fit = Math.max(0, fit - 1);
+	
+	showHealth();
+}
+
 $(function () {
     $("form").on('submit', function (e) {
         e.preventDefault();
@@ -342,7 +408,7 @@ $(function () {
     canvas.addEventListener("click", onClick, false);
     
     var myVar = setInterval(function(){ renew() }, 5000);
-    
+    var live = setInterval(function(){ naturalDecline() }, 1000);
     animate();
 });
 var moving = false;
