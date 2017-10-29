@@ -6,6 +6,83 @@ var currentPos = {};
 var width, height;
 var fallbackIP = "172.20.10.10:8000";
 
+var hungry = 50;
+var happy = 50;
+var fit = 50;
+
+var reallyMove = true;
+
+function eat() {
+	hungry = Math.max(0, hungry - 10);
+	if (hungry < 50) {
+		happy = Math.min(100, happy + 10);
+		fit = Math.min(100, fit + 10);
+	}
+	
+	react();
+}
+
+function play() {
+	happy = Math.min(100, happy + 10);
+	fit = Math.max(0, fit - 10);
+	hungry = Math.min(100, hungry + 10);
+	
+	react();
+}
+
+function react() {
+	var message = saySomething();
+	showCommunication(message);
+
+	moveBasedOnFeeling();
+}
+
+function moveBasedOnFeeling() {
+	var speed = 50;
+	if (hungry > 50) {
+		speed -= 10;
+	}
+	if (fit < 50) {
+		speed -= 10;
+	}
+	if (reallyMove) {
+		//MainEPet.changeSpeedTo(speed);
+		setSpeed(speed);
+	}
+
+	var xFrom = 10;
+	var yFrom = 10;
+
+	var xTo = xFrom;
+	var yTo = yFrom;
+
+	var bonus = (fit > 50) ? 3 : 1;
+
+	bonus = (happy < 50) ? -1*bonus : 1*bonus;
+
+	xTo += bonus * 2;
+	yTo += bonus * 5;
+
+	if (reallyMove) {
+		//MainEPet.moveFromTo(xFrom, yFrom, xTo, yTo);
+		gotox(xFrom, yFrom, xTo, yTo);
+	}
+
+}
+
+function saySomething() {
+	if (hungry > 80) {
+		return "So hungry I cannot think of anything else";
+	} else if (hungry > 50 && happy > 50) {
+		return "Happy and hungry";
+	} else if (fit < 50) {
+		return "Too tired!";
+	} else if (happy < 50) {
+		return "Feedling sad";
+	} else {
+		return "Everything's fine";
+	}
+}
 
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
@@ -73,11 +150,16 @@ function showPosition(lat, lng) {
 		 $("#locations").children("tr:last").remove();
 	 }
 	 
-	 $("#locationBox").text(lat + ", " + lng)
+	 $("#locationBox").text(lat + ", " + lng);
 	
 }
+
 function showPositionBox(x, y) {
-	$("#locationBox").text(x + ", " + y)
+	$("#locationBox").text(x + ", " + y);
+}
+
+function remoteSetSpeed() {
+	setSpeed($("#speedBox").value());
 }
 
 function clearCanvas() {
@@ -163,6 +245,10 @@ function moveBackward() {
 	move("backward");
 }
 
+function setSpeed(speed) {
+	move("speed" + speed);
+}
+
 function obtainIp() {
 	if(globalIP) {
 		return globalIP;
@@ -178,6 +264,25 @@ function move(direction) {
 		  type: "POST",
 		  url: url,
 		  data: data,
+		  success: function(data) {
+			  console.log(data);
+		   },
+		  dataType: "json",
+		  timeout: 1000 
+		});
+}
+
+function gotox(x1,y1,x2,y2) {
+	var url = "http://"+obtainIp()+"/gotox";
+	$.ajax({
+		  type: "POST",
+		  url: url,
+		  data : {
+			  x1 : x1,
+			  y1 : y1,
+			  x2 : x2,
+			  y2 : y2
+		  },
 		  success: function(data) {
 			  console.log(data);
 		   },
@@ -239,4 +344,47 @@ $(function () {
     var myVar = setInterval(function(){ renew() }, 5000);
     
     animate();
+});
+var moving = false;
+
+$(document).keydown(function(e) {
+    switch(e.which) {
+        case 37: // left
+        	if(!moving) {
+        		moving = true;
+        		turnLeft();
+        	}
+        break;
+
+        case 38: // up
+        	if(!moving) {
+        		moving = true;
+        		moveForward();
+        	}
+        break;
+
+        case 39: // right
+        	if(!moving) {
+        		moving = true;
+        		turnRight();
+        	}
+        break;
+
+        case 40: // down
+        	if(!moving) {
+        		moving = true;
+        		moveBackward();
+        	}
+        break;
+
+        default: return; // exit this handler for other keys
+    }
+    e.preventDefault(); // prevent the default action (scroll / move caret)
+});
+
+$(document).keyup(function(e) {
+    if (e.which === 38 || e.which === 37 || e.which === 39 || e.which === 40) {
+    	stopMove();
+    	moving = false;
+    }
 });
