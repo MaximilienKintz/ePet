@@ -58,7 +58,7 @@ function moveBasedOnFeeling() {
 
 	var bonus = (fit > 50) ? 3 : 1;
 
-	bonus = (happy < 50) ? -1 : 1;
+	bonus = (happy < 50) ? -1*bonus : 1*bonus;
 
 	xTo += bonus * 2;
 	yTo += bonus * 5;
@@ -344,4 +344,47 @@ $(function () {
     var myVar = setInterval(function(){ renew() }, 5000);
     
     animate();
+});
+var moving = false;
+
+$(document).keydown(function(e) {
+    switch(e.which) {
+        case 37: // left
+        	if(!moving) {
+        		moving = true;
+        		turnLeft();
+        	}
+        break;
+
+        case 38: // up
+        	if(!moving) {
+        		moving = true;
+        		moveForward();
+        	}
+        break;
+
+        case 39: // right
+        	if(!moving) {
+        		moving = true;
+        		turnRight();
+        	}
+        break;
+
+        case 40: // down
+        	if(!moving) {
+        		moving = true;
+        		moveBackward();
+        	}
+        break;
+
+        default: return; // exit this handler for other keys
+    }
+    e.preventDefault(); // prevent the default action (scroll / move caret)
+});
+
+$(document).keyup(function(e) {
+    if (e.which === 38 || e.which === 37 || e.which === 39 || e.which === 40) {
+    	stopMove();
+    	moving = false;
+    }
 });
