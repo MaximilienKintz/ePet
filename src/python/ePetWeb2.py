@@ -1,33 +1,31 @@
 import time
-import json
+import socket
+import requests
+import subprocess
 
-from geventwebsocket import WebSocketHandler, WebSocketError
-from bottle import get,post,route, run, request, abort, Bottle ,static_file, template
-from pymongo import Connection
-from gevent import monkey; monkey.patch_all()
-from time import sleep
-
+from bottle import get,post,run,request,template
 from AlphaBot2 import AlphaBot2
 
-print('ePet Web Server Test Start ...')
+print('ePet Web Server Test 4 Start ...')
 Ab = AlphaBot2()
-app = Bottle()
 
 Ab.stop()
 
-@app.route('/websocket')
-def handle_websocket():
-    wsock = request.environ.get('wsgi.websocket')
-    if not wsock:
-        abort(400, 'Expected WebSocket request.')
-    while True:
-        try:
-            message = wsock.receive()
-            wsock.send("Your message was: %r" % message)
-            sleep(3)
-            wsock.send("Your message was: %r" % message)
-        except WebSocketError:
-            break
+
+
+def getIP():
+	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	s.connect(("8.8.8.8", 80))
+	ip = s.getsockname()[0]
+	s.close()
+	return ip
+	
+def registerDevice():
+	ip = getIP() +":8000";
+	url = 'https://epet-epet.training.altemista.cloud/register?ip='+ip
+	resp = requests.post(url, verify=False)
+	print("URL: " + url)
+	print(ip)
 
 @post("/cmd")
 def cmd():
@@ -59,13 +57,64 @@ def cmd():
 		HStep = 5
 	elif code == "right":
 		HStep = -5
+	elif code.startswith("speed"):
+		speed=code[5:]
+		Ab.setPWMA(float(speed))
+		Ab.setPWMB(float(speed))
+		print(speed)
+	elif code.startswith("rgb"):
+		c1 = code[3:6]
+		c2 = code[6:9]
+		c3 = code[9:12]
+		command = code[12:17]
+		print(c1 + " " + c2 + " " + c3 + " - " + command)
+		subprocess.call(['sudo', 'python', 'ePetRGB2.py', c1, c2, c3, command])
 	return "OK"
 
+@post("/gotox")
+def gotox():
+	# x1 y1: here we are
+	x1 = int(request.forms.get('x1'))
+	y1 = int(request.forms.get('y1'))
+	# x2 y2: here we want to go
+	x2 = int(request.forms.get('x2'))
+	y2 = int(request.forms.get('y2'))
+	stepx = x2 - x1
+	stepy = y2 - y1
+	print("stepx " + str(stepx) + ", stepy " + str(stepy))
+	if stepy > 0:
+		# Forward
+		for x in range(1, stepy, 1):
+			Ab.forward()
+			time.sleep(1)
+			Ab.stop()
+	if stepy < 0:
+		# Backward
+		for x in range(1, -1 * stepy, 1):
+			Ab.backward()
+			time.sleep(1)
+			Ab.stop()
+	if stepx > 0:
+		# Right
+		Ab.forward()
+		Ab.right()
+		time.sleep(1)
+		Ab.stop()
+		for x in range(1, stepx, 1):
+			Ab.forward()
+			time.sleep(1)
+			Ab.stop()
+	if stepx < 0:
+		# Left
+		Ab.forward()
+		Ab.left()
+		time.sleep(1)
+		Ab.stop()
+		for x in range(1, -1 * stepx, 1):
+			Ab.forward()
+			time.sleep(1)
+			Ab.stop()
 
-host = "127.0.0.1"
-port = 8080
+registerDevice()
 
-server = WSGIServer((host, port), app,
-                    handler_class=WebSocketHandler)
-print "access @ http://%s:%s/websocket.html" % (host,port)
-server.serve_forever()
+run(host="0.0.0.0",port="8000")
