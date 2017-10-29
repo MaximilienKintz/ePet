@@ -22,20 +22,13 @@
                 </div>
             </form>
         </div>
-        <div class="col-md-4">
-            <form class="form-inline">
-                <div class="form-group">
-                    <label for="name">User's Name:</label>
-                    <input type="text" id="name" class="form-control">
-                </div>
-                <button id="send" class="btn btn-default" type="submit">Send</button>
-            </form>
+        <div class="col-md-4" id="ipBox">
+
         </div>
-        <button id="send" class="btn btn-default" type="submit" onClick="requestLocation()">Location!</button>
     </div>
     <div class="row">
 			<div class="col-md-6">
-				<canvas id="myCanvas" width="600" height="300">
+				<canvas id="myCanvas" width="580" height="300">
 				  <p>This is fallback content 
 				  for users of assistive technologies 
 				  or of browsers that don't have 
@@ -43,30 +36,63 @@
 				</canvas>
 			</div>
 			<div class="col-md-3">
-				<table id="conversation" class="table table-striped">
-					<thead>
+				<h2>Last Locations</h2>
+	            <table id="table" class="table table-striped">
+	                <tbody id="locations">
+	                </tbody>
+	            </table>
+	            
+	            <h2>Messages</h2>
+	            <table id="table" class="table table-striped">
+	                <tbody id="hellos">
+	                </tbody>
+	            </table>
+        	</div>
+        	<div class="col-md-3">
+        		<h2>Remote Control</h2>
+	            <table id="table" class="table table-striped">
+					<tbody id="">
 						<tr>
-							<th>Greetings</th>
+							<td></td>
+							<td>
+								<button id="send" class="btn btn-default"
+									onClick="moveForward()" style="width: 100%;">Forward</button>
+							</td>
+							<td></td>
 						</tr>
-					</thead>
-					<tbody id="hellos">
+						<tr>
+							<td><button id="send" class="btn btn-default"
+									onClick="turnLeft()" style="width: 100%;">Left</button></td>
+							<td>
+								<button id="send" class="btn btn-default" onClick="stopMove()"
+									style="width: 100%;">Stop</button>
+							</td>
+							<td><button id="send" class="btn btn-default"
+									onClick="turnRight()" style="width: 100%;">Right</button></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td>
+								<button id="send" class="btn btn-default"
+									onClick="moveBackward()" style="width: 100%;">Backward</button>
+							</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>
+								<div class="form-group">
+									<label for="name">Speed:</label> <input type="text"
+										id="name" class="form-control"><button id="speedB" class="btn btn-default"
+									onClick="setSpeed()" style="width: 100%;">Set</button>
+								</div>
+							</td>
+						</tr>
 					</tbody>
 				</table>
-			</div>
-			<div class="col-md-3">
-            <table id="table" class="table table-striped">
-                <thead>
-	                <tr>
-	                    <th>Greetings</th>
-	                </tr>
-                </thead>
-                <tbody id="locations">
-                </tbody>
-            </table>
-        </div>
-        <div id="locationBox" class="col-md-3">
-            
-        </div>
+        	</div>
+        	<div id="locationBox" class="col-md-3">
+            	
+        	</div>
     </div>
 </div>
 </body>
