@@ -172,7 +172,7 @@ function showHealth() {
 	var color = calculateRGBColor(hungry);
 	$("#colorBox").css('background', 'rgb('+color.R+','+color.G+',' + color.B +')');
 	
-	move("rgb"+zeroPad(color.R, 3)+zeroPad(color.G, 3)+zeroPad(color.B, 3)+"burst");
+	move("rgb"+zeroPad(color.R, 3)+zeroPad(color.G, 3)+zeroPad(color.B, 3)+"blink");
 	
 	$("#healthIndex").html("Hungry: <b>" + hungry + "%<b> Happy: <b>" + happy + "%</b> Fit: <b>" + fit + "%</b>");
 }
