@@ -149,5 +149,7 @@ public class GameTimer {
 		return robotIp;
 	}
 	
-	
+	public void addMessage(String message) {
+		
+	}
 }

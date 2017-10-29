@@ -46,4 +46,7 @@ public class WebController {
 	    this.template.convertAndSend("/topic/info", str);
 	}
 	
+	public void sendUIMessage(String str) throws Exception {
+	    this.template.convertAndSend("/topic/comm", str);
+	}
 }

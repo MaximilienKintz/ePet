@@ -34,9 +34,9 @@ function connect() {
         });
         
         stompClient.subscribe('/topic/comm', function (data) {
-        	var json = JSON.parse(data.body);
+        	//var json = JSON.parse(data.body);
         	
-            showCommunication(json.text);
+            showCommunication(data.body);
         });
         
         stompClient.subscribe('/topic/info', function (data) {
