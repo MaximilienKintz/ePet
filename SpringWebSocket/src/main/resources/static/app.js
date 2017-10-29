@@ -273,10 +273,16 @@ function move(direction) {
 }
 
 function gotox(x1,y1,x2,y2) {
-	var url = "http://"+obtainIp()+"/gotox?x1=" + x1 + "&y1=" + y1 + "&x2=" + x2 + "&y2=" + y2;
+	var url = "http://"+obtainIp()+"/gotox";
 	$.ajax({
 		  type: "POST",
 		  url: url,
+		  data : {
+			  x1 : x1,
+			  y1 : y1,
+			  x2 : x2,
+			  y2 : y2
+		  },
 		  success: function(data) {
 			  console.log(data);
 		   },
