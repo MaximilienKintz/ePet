@@ -102,7 +102,6 @@ public class MainEPet {
 	}
 
 	private static void sampleXYDemo() {
-
 		
 		moveFromTo(10, 5, 10, 7);
 		

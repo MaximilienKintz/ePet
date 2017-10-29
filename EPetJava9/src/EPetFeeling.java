@@ -105,7 +105,6 @@ public class EPetFeeling {
 				System.out.println("Please enter something, 'quit' to quit");
 			}
 		}
-
 	}
 
 	@Override
